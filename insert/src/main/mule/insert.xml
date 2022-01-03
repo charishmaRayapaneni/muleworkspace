@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="074c0157-9dd8-4565-9bbc-b706fb576453" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="c38c5f8b-854f-4700-8c0a-ef5fb402e17b" >
+		<db:mssql-connection host="${sqldb.host}" port="${sqldb.port}" user="${sqldb.user}" password="${secure::sqldb.password}" databaseName="${sqldb.dbname}"/>
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="a782a7f3-495d-40cf-b1b0-6af803a7ffb5" file="properties\dev.yaml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="913151a4-188b-49a7-b5d7-92c3432dcafe" file="properties\dev.yaml" key="mulesofttraining@1234567" />
+	<flow name="insertFlow" doc:id="684dac78-93e9-40ca-8277-4947d4d8125f" >
+		<http:listener doc:name="Listener" doc:id="5ca3d56c-1f06-42a6-9dc5-b912c354556a" path="/cherry" config-ref="HTTP_Listener_config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="25486aac-429b-4ccc-8a84-277fae5db501" message="#[payload]"/>
+		<db:insert doc:name="Insert" doc:id="5af7fc93-11c8-4bb4-a0df-5d84b867fefe" config-ref="Database_Config">
+			<db:sql ><![CDATA[Insert into production.categories (category_name) values (:value)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	value : payload.categoryName default 'abc'
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="b29d54a1-393e-44d9-9c57-4b1a51ed6a17" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
