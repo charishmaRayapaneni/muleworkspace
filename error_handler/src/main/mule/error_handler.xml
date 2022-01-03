@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b76c5146-e51b-406c-8736-9ef355a07ec6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c5ab0c08-854b-4710-88f6-b39669b4b7fd" >
+		<http:request-connection host="localhost:8081" />
+	</http:request-config>
+	<flow name="error_handlerFlow" doc:id="dca72395-382f-4641-9088-54ea83d6384b" >
+		<http:listener doc:name="Listener" doc:id="a13c5cbe-298f-423e-897f-0495d7fde05a" config-ref="HTTP_Listener_config" path="/trail"/>
+		<flow-ref doc:name="Flow Reference" doc:id="505a8be1-c166-43b5-9be1-9934402db125" name="privateflow"/>
+		<set-payload value='#["flow completed ! thankyou"]' doc:name="Set Payload" doc:id="5b718206-1257-44db-9351-bb154234977c" />
+	</flow>
+	<flow name="privateflow" doc:id="5c31c0ef-10cd-43b7-85d7-98345454eef9">
+		<http:request method="GET" doc:name="Request" doc:id="71b12ecf-a6a2-4577-8979-12f8bdc4c52c" config-ref="HTTP_Request_configuration" url="hhggd.jsu"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5dc26a27-bf56-41c7-a622-58a2536f2574" type="HTTP:CONNECTIVITY">
+				<ee:transform doc:name="Transform Message" doc:id="2b54f150-0f7c-4d6c-a207-f858bc39182a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"we are in On-Error propogate"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="error_handlerFlow1" doc:id="1b31332d-c5f9-4a12-b03d-1e8741c4174f" >
+		<http:listener doc:name="Listener" doc:id="1720eeef-be4c-4dd3-bafe-c0a9525e458f" config-ref="HTTP_Listener_config" path="/trail2">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<flow-ref doc:name="Flow Reference" doc:id="89e2304a-2031-40d8-bfb9-2a9a0fc1c8bd" name="error_handlerFlow2"/>
+		<set-payload value='#["flow completed"]' doc:name="Set Payload" doc:id="6f729ad4-0af7-4069-a7ff-0f46dc99f4e2" />
+	</flow>
+	<flow name="error_handlerFlow2" doc:id="13937bfb-18e8-4680-ab55-5da4421d62dc" >
+		<http:request method="POST" doc:name="Request" doc:id="5e7f9b8f-4ae2-4e5b-a204-0b5fb25a5d30" config-ref="HTTP_Request_configuration" url="hyuft.hhftf"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ae333b39-2003-48cb-b3d6-2f810c903f74" type="HTTP:CONNECTIVITY">
+				<ee:transform doc:name="Transform Message" doc:id="4ff0d7c9-0809-4400-a102-2a702b02c7d2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"result" :error.description
+
+}
+	
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="GLOBAL_CONFRIGURATIONError_Handler" doc:id="29723c7b-078e-46d4-8f62-d2727f74f0ec" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="86d89522-334b-4299-9dcb-b93b9898ec98" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="6fa0bf60-4e8c-4dda-bd44-3623e54bbd83" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+"GLOBAL CONFRIGURATION"]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+	</error-handler>
+</mule>
