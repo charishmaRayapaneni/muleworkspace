@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="09d72461-6c76-427a-97b1-677cfd1dcbfc" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="6fd49be9-a75d-4caf-b0ba-61209a47bd63">
+		<http:request-connection host="api.openweathermap.org/data/2.5/weather?q=hyderabad&amp;appid=e6582995782c626731dadca2df940fd7" />
+	</http:request-config>
+	<flow name="27dec-task2Flow" doc:id="193626a1-6040-47bd-98bf-21f35a3bf39e" >
+		<http:listener doc:name="Listener" doc:id="42ad57f7-1c51-495a-8167-b20a27768a77" config-ref="HTTP_Listener_config" path="/27dec-task2"/>
+		<http:request method="GET" doc:name="Request" doc:id="3ddbab5d-92e8-473d-b2b5-3cc04564558f" config-ref="HTTP_Request_configuration" url="https://api.openweathermap.org/data/2.5/weather?q=hyderabad&amp;appid=e6582995782c626731dadca2df940fd7"/>
+		<ee:transform doc:name="Transform Message" doc:id="54610db9-f247-4bd1-aeef-7ab3932525f7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"max-temp": payload.main.temp_max-273 ++"celusis",
+"min-temp": payload.main.temp_min-273 ++"celusis"
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="28dec-task2Flow2" doc:id="d1a5445e-86cf-4f8f-9391-59335e5a2995" >
+		<http:listener doc:name="Listener" doc:id="145099f1-46ee-451b-b4c1-90ba5c6e5a8f" config-ref="HTTP_Listener_config" path="/27dec-task2flow2"/>
+		<ee:transform doc:name="Transform Message" doc:id="46149b73-9f87-42d2-8b46-060e48efc59b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+//payload filter $.age== 22 map (key, index)-> 
+	//{
+    //"firstname" : key.firstname,
+    //"index" : index,
+    //"lastname" : key.lastname
+   // }
+//payload distinctBy (item, index) -> 
+//item.firstname
+//{
+
+//employeename : payload.employee_name,
+
+//employeeid : payload.employeeid,
+
+//designation: payload.employee_designation distinctBy ((item, index) ->item )
+//}
+//payload groupBy ((item, index) ->item.acc_type )
+payload filterObject ((value, key, index) -> 
+index > 2)
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="27dec-task2Flow1" doc:id="fed8f094-75d5-4c22-a099-2205b7b6357c" >
+		<http:listener doc:name="Listener" doc:id="f5649a0e-7147-46d4-91cd-5e42c3f79ef0" config-ref="HTTP_Listener_config" path="/27dec-task2flow1"/>
+		<ee:transform doc:name="Transform Message" doc:id="572ac17e-0353-47b2-a0c1-038adeb472b5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+"minimum temp":payload.list.temp_min,
+"Maximum temp" :payload.list.main.temp_max,
+"pressure" :payload.list.main.Pressure,
+"sealevel":payload.list.main.sea_level
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
