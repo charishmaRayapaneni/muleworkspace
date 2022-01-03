@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c15a357f-7765-4d6c-bc84-5d392c44750d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="javamodule1Flow" doc:id="cf4dce31-f1eb-478d-b5e4-c27f981141a6" >
+		<http:listener doc:name="Listener" doc:id="1bc236e5-27d8-46a9-9477-c446b569c1aa" config-ref="HTTP_Listener_config" path="/welcome"/>
+		<java:new doc:name="New" doc:id="502d816c-4976-4d3f-9c01-31459620d7ef" class="com.proj.sample" constructor="sample()" target="objofsample"/>
+		<java:invoke doc:name="Invoke" doc:id="d64700e0-bb6b-4884-a08c-1c8324a1ea95" class="com.proj.sample" instance="#[vars.objofsample]" method="getBalance(String bankName)">
+			<java:args ><![CDATA[{
+   arg0: attributes.queryparams.bankname
+ }]]></java:args>
+		</java:invoke>
+	</flow>
+	<flow name="javamodule1Flow1" doc:id="0c60be65-d094-4a32-acc6-e3d49e75d4e4" >
+		<http:listener doc:name="Listener" doc:id="217dd2d8-4cbe-4a92-b86b-0a31a163b7aa" path="/welcome" config-ref="HTTP_Listener_config"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="a0cf4a5b-ed2b-4f06-a64e-ff4423701954" class="com.proj.sample" method="welcome(String name)">
+			<java:args ><![CDATA[{
+    args : "raj"
+ 
+ }]]></java:args>
+		</java:invoke-static>
+	</flow>
+</mule>
