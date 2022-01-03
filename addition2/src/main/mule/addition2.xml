@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="82a7f891-922e-44a8-84c7-35c0eb03e789" >
+		<http:request-connection host="addition-papi.us-e2.cloudhub.io" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c3aaaf3e-1879-4798-bdac-dc9cdc24e5e1" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="addition2Flow" doc:id="7d4af2d2-567c-4fbc-bdfe-770018ed8a64" >
+		<http:listener doc:name="Listener" doc:id="644a157c-c0af-4171-ab3e-3bff9dc528e6" config-ref="HTTP_Listener_config" path="/addition"/>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="866b7930-bed3-449e-8bec-95726e1bfde1" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="Logger" doc:id="bfc2f35b-67dc-4ba4-9b86-5fbb8b1286e4" message="Correlationid -#[vars.Correlationid]"/>
+		<http:request method="POST" doc:name="Request" doc:id="065cf61b-40ea-4a8d-9a86-1d0fe346b1d9" config-ref="HTTP_Request_configuration" path="/add"/>
+		<logger level="INFO" doc:name="Logger" doc:id="aa3d92d4-714c-4bb9-a017-fecfadf9331a" message="Correlationid -#[vars.Correlationid] #[payload]"/>
+	</flow>
+</mule>

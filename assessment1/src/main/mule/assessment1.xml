@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e9780d9a-75be-438a-acac-e0eec6dd57c5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="assessment1Flow" doc:id="b88a093b-c1c6-4d90-89e4-678acb15edae" >
+		<http:listener doc:name="listener" doc:id="db5c7a03-6ab5-42ee-820e-d82ae38fd511" path="project" config-ref="HTTP_Listener_config"/>
+		<set-variable value="#[uuid()]" doc:name="Correlationid" doc:id="eb597f31-5e99-4e79-935e-0a28cff87fb8" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="json Logger" doc:id="19be913e-e59d-4c3f-b13f-a78d0660541b" message="Correlationid -#[vars.Correlationid] "/>
+		<ee:transform doc:name="Transform Message" doc:id="0786c5b3-0fd9-4d76-974b-8dc12d422d95" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+value: payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name=" xml Logger" doc:id="bc1a4875-39a2-4faf-9c13-967353970f74" message="Correlationalid payload to xml -#[payload]"/>
+	</flow>
+</mule>

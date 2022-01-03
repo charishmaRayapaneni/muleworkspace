@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="8a059370-3a03-4cd2-b5e3-b1034cb1b34d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="getamount" doc:id="694a1393-c29e-4f32-aad1-e3d3cbf496f5" >
+		<http:listener doc:name="Listener" doc:id="56cb8758-4fa5-4c8b-9dc1-2900afa70045" config-ref="HTTP_Listener_config1" path="ass2"/>
+		<java:new doc:name="New" doc:id="ae4b42a5-fb1e-4c4b-a942-36ecfd7e48a8" class="proj2.sales" target="abc" constructor="sales()"/>
+		<java:invoke doc:name="Invoke" doc:id="39c5332b-5fa1-4d74-938d-c782b2cea62f" class="proj2.sales" instance="#[vars.abc]" method="getAmount(java.lang.String)">
+			<java:args ><![CDATA[#[{
+	arg0: payload.size as String
+}]]]></java:args>
+		</java:invoke>
+		<ee:transform doc:name="Transform Message" doc:id="9d488409-2799-4f8b-89da-a226c5388e2b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+"total amount is": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="assessment2Flow" doc:id="016a5e3b-f31b-4db6-b416-09d50cfff1de" >
+		<http:listener doc:name="Listener" doc:id="b2ff9101-cf3e-4a01-9f8b-7418bb2aacaf" config-ref="HTTP_Listener_config1" path="ass"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="ec50409e-39ee-4eea-aa9f-7aaefb51b51b" class="proj2.sales" method="checkProduct(int)">
+			<java:args ><![CDATA[#[{
+	arg0:attributes.queryParams.number as Number
+}]]]></java:args>
+		</java:invoke-static>
+		<set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="0f79c78b-ffcf-4cbc-a69c-7601d739fbcd" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0207f9dc-e5a9-4303-a2a2-02eba9ed5bda" message="Correlationid -#[vars.Correlationid]  -#[payload]"/>
+		<choice doc:name="Choice" doc:id="174a3eb6-9f78-4223-9da7-ae4ed714114b" >
+			<when expression="#[payload==true]">
+				<logger level="INFO" doc:name="Logger" doc:id="07df4d0e-5265-4823-b6e5-f4e166853b9c" message="#[payload]"/>
+				<set-payload value="Valid ID" doc:name="Set Payload" doc:id="f27bc966-2af9-4927-bc35-27870b8447de" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="15c02448-02be-42f2-b42a-09e2fefdefd6" message="Productid is invalid"/>
+				<set-payload value="Invalid id" doc:name="Set Payload" doc:id="235196d9-4963-459e-8574-d6a7e98bcea4" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

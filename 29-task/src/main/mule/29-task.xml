@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fd6bb7a7-8295-4de4-b4d8-583be26be4f9" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="75981ad3-74a8-42af-ad98-65caf130b105" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="learndb" />
+	</db:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="9beb15df-3d91-4f98-a45a-d5022af1358b" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="learndb" />
+	</db:config>
+	<db:config name="Database_Config2" doc:name="Database Config" doc:id="b5b82446-1f96-4e6c-86fc-7015ec5cd1ba" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="learndb" />
+	</db:config>
+	<db:config name="Database_Config3" doc:name="Database Config" doc:id="ad1d1a36-b10f-48f1-a9e7-91c95cfdda5c" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="learndb" />
+	</db:config>
+	<flow name="29-taskFlow" doc:id="bb5cf7c9-9208-49bb-a202-87efcdb3a5c5" >
+		<http:listener doc:name="Listener" doc:id="dd9cb57a-42bf-4053-8e2b-dd0d9250c815" config-ref="HTTP_Listener_config" path="/select1"/>
+		<db:select doc:name="Select" doc:id="72bc9ee0-4c57-4c08-a8b0-40737d377c51" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from learndb.accountholders_details]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="c6d591f1-4fe4-480a-b8b8-e7e7e22c55a8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="29-taskFlow1" doc:id="94aa711a-15c2-43d8-bd5b-1a5f6ac7a5d3" >
+		<http:listener doc:name="Listener" doc:id="a2b5c9f2-17c3-43a4-997c-ab651552a545" config-ref="HTTP_Listener_config" path="/insert1"/>
+		<db:insert doc:name="Insert" doc:id="3ee4fde1-883a-4e61-ba64-b7f3a6de7cfb" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into learndb.accountholders_details (acc_no,name,mobileno,address)
+values (35565657,'trainer',2234398,'banglore');]]></db:sql>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="4fcedc32-43d6-4f48-abdc-86c7460bc8fd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1060e3f3-6716-4f5e-9386-33aa16002ae1" message="#[payload]"/>
+	</flow>
+	<flow name="29-taskFlow3" doc:id="1824119c-8ac2-4669-af49-ddb021edd474" >
+		<http:listener doc:name="Listener" doc:id="c1ea5f62-9916-46df-8f9c-85ec30254d72" config-ref="HTTP_Listener_config" path="/delete"/>
+		<db:delete doc:name="Delete" doc:id="82e7c172-3b13-44a5-befc-319491a44898" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from customer_details where id = null]]></db:sql>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="8f2a0181-2005-4195-af72-aefe54cb0eb6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="29-taskFlow2" doc:id="7c643765-ff7a-4546-ab52-f6129ed19c74" >
+		<http:listener doc:name="Listener" doc:id="1d1048a0-ccf5-4a6f-8c34-95ff74caea14" config-ref="HTTP_Listener_config" path="/update"/>
+		<db:update doc:name="Update" doc:id="64e11db7-713d-480c-812c-a24001dc9adc" config-ref="Database_Config1">
+			<db:sql ><![CDATA[update customer_details set gender = "female" where name = "gainee"]]></db:sql>
+		</db:update>
+		<ee:transform doc:name="Transform Message" doc:id="eb1e0606-be97-4365-9aca-f0443ee2c38a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

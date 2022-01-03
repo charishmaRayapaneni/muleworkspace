@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="29-task-suite.xml" />
+	<munit:test name="29-taskFlow1-insertsucess" doc:id="7e11d482-fc06-49f2-9990-16a994737004" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Insert" doc:id="f19659e3-c49a-4707-ac0e-d8dfa4deac5d" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="3ee4fde1-883a-4e61-ba64-b7f3a6de7cfb" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://29taskFlow1insertsucess\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="16b01011-c6cb-4e5a-95fb-6d546cdb35a5" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://29taskFlow1insertsucess\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://29taskFlow1insertsucess\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to 29-taskFlow1" doc:id="66897b21-3b0c-45bf-9b7b-cbc30472c210" name="29-taskFlow1"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="f0b0348a-155f-4daf-a8f2-488eef14ca4c" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import 29taskFlow1insertsucess::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="29-taskFlow2-updatesuccess" doc:id="83dd83f9-bb54-4976-89f1-94226752c182" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="02407bb2-3f97-4b40-95a8-480b5bffc5f0" >
+				<munit:payload value="#[readUrl('classpath://29taskFlow2updatesuccess\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://29taskFlow2updatesuccess\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to 29-taskFlow2" doc:id="949173e5-b7d6-43b8-be09-f318e7f89ed6" name="29-taskFlow2"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="84dc53c3-f4cf-44d1-9fb6-32d06d1587ce" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import 29taskFlow2updatesuccess::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="29-taskFlow-success" doc:id="1fcfe55d-f516-41d3-bf08-59c7313c45ed" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Select" doc:id="637f05b4-5515-4d7a-84fd-0409cdf7971e" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="72bc9ee0-4c57-4c08-a8b0-40737d377c51" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://29taskFlowsuccess\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="2bf33f66-30cb-4c6f-b671-e27d264a741a" >
+				<munit:payload value="#[readUrl('classpath://29taskFlowsuccess\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://29taskFlowsuccess\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to 29-taskFlow" doc:id="134e0f7c-93bc-4a05-9e2e-1b10c8407f6c" name="29-taskFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="08e83925-28f9-4a44-a5cb-453220f5bb9b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import 29taskFlowsuccess::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
