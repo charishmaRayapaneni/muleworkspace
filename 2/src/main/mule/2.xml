@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f18a122c-a548-4ec5-9086-b7bdbf2083da" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="28decassignment1" doc:id="6a1c3747-20b2-43f6-8087-0ae0bbccafb6" >
+		<http:listener doc:name="Listener" doc:id="7953b038-c872-4e70-8201-cd836b61a183" config-ref="HTTP_Listener_config" path="/28task1"/>
+		<ee:transform doc:name="Transform Message" doc:id="7882858a-e210-4960-910c-2f4b35813882" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+//payload filter $.age > 27 map (item, index) ->
+//{
+//"name":(item.firstName ++ " " ++ item.lastName),
+//"age" : item.age,
+//"salary":item.salary
+//}
+
+//payload groupBy $.language
+
+//payload mapObject
+ //{
+  //  (upper($)) : $$
+// }
+
+ 
+// payload mapObject {
+ //   "element":
+   // "key" :$,
+   // "value":$,
+  //  "index":$$$
+ //}
+ 
+ 
+ //{
+   // prices: payload.prices mapObject (value, key) -> {
+    //    (key): (value + 5) as Number 
+    //}
+//}
+
+    "candidatedetails": payload.employee map((item,index) -> {
+        "fname":item.FirstName ++ " " ++ item.LastName,
+	
+    })
+ ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
