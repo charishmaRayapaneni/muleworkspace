@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="201cb4d5-100c-4bf6-bf9c-95bd6fc1c8c3" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="e521c4a2-0a82-414b-a62d-680a44bc1728" >
+		<wsc:connection wsdlLocation="http://calculator-webservice.mybluemix.net/calculator?wsdl " service="CalculatorService" port="CalculatorPort" address="http://calculator-webservice.mybluemix.net/calculator" >
+			<wsc:web-service-security actor="http://schemas.xmlsoap.org/soap/actor/next" />
+		</wsc:connection>
+	</wsc:config>
+	<flow name="consumeFlow" doc:id="4d6bc382-39aa-4ae1-9959-5307f410339d" >
+		<http:listener doc:name="Listener" doc:id="5e4c2366-7ac3-4507-8ae9-ccad1db62af4" config-ref="HTTP_Listener_config" path="consume"/>
+		<choice doc:name="Choice" doc:id="e3100661-606e-4d93-87f8-258160611bf7">
+			<when expression="#[payload.value1 &gt; payload.value2]">
+				<ee:transform doc:name="Transform Message" doc:id="c743cb85-2f55-4b75-a864-04b7cbc994e2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://example.com/
+---
+{
+	ns0#multiply: {
+		intA: payload.value1,
+		intB: payload.value2
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume doc:name="Consume" doc:id="b91beccd-6a13-49c8-9c94-9756dad7eef6" config-ref="Web_Service_Consumer_Config" operation="multiply" />
+				<ee:transform doc:name="Transform Message" doc:id="6724149c-c5a7-427b-a1f9-4653da8693c7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0ns ns0 http://example.com/
+
+output application/json
+---
+{
+"result":payload.body.ns0#multiplyResponse.value
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="4fead2fe-8c7a-4ff3-b4df-7480e9f3032a" message="value1 is lessthan value2.so operation is not done"/>
+				<set-payload value="OOps!!value1 is lessthan value2.so operation is not done" doc:name="Set Payload" doc:id="149391db-924e-44c5-b019-8ccf8a258101" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
