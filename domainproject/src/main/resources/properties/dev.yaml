@@ -1,0 +1,6 @@
+sqldb:
+  host: 'muletraining.database.windows.net'
+  port: '1433'
+  user: 'user'
+  password: 'JEahoWFGqRlY0oJPZKGRL1QXD0Zq0uLFwTlw3KI2x6c='
+  dbname: 'Bikestores'

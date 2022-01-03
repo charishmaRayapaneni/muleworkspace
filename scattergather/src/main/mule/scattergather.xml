@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="177c04e1-31b0-496a-bc01-a9bb21dd4315" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="scattergatherFlow" doc:id="7b56cf7b-a811-447c-81d2-ff17c412e12c" >
+		<http:listener doc:name="Listener" doc:id="d2718335-43a9-4f8c-a2a2-e0c7bff4c9a0" config-ref="HTTP_Listener_config" path="/scatter"/>
+		<set-variable value='#["abc"]' doc:name="Set Variable" doc:id="27a2a47d-b2c3-420e-a5cd-e23a56f1b96f" variableName="originalpayload"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="f5e5f507-a50b-4324-bf6c-0e1923d8d7b8" >
+			<route >
+				<set-variable value="#[payload ++ &quot;&quot; ++ 'route2']" doc:name="Set Variable" doc:id="d4349c30-0a01-4386-a5d6-f51eacbd21c1" variableName="Route1"/>
+				<set-payload value="#[payload ++ &quot; &quot; ++ 'route1']" doc:name="Set Payload" doc:id="a5c039d6-59fc-4bcd-811c-2803a992b8fb" />
+			</route>
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot; ++ 'route2']" doc:name="Set Variable" doc:id="dc6cf7fd-ac50-4001-af3c-835db90550f6" variableName="Route2"/>
+				<set-payload value="#[payload ++ &quot; &quot; ++ 'route2']" doc:name="Set Payload" doc:id="4317581c-bd0b-41fa-9b87-a9c2e233e90c" />
+			</route>
+			<route >
+				<set-variable value="#[payload ++ &quot; &quot; ++ 'route3']" doc:name="Set Variable" doc:id="6a5a3f7c-10e0-4d74-acdd-b431c3e5385a" variableName="route3"/>
+				<set-payload value="#[payload ++ &quot; &quot; ++ 'route3']" doc:name="Set Payload" doc:id="dea49c41-4a27-4f4a-8277-e05a0d172575" />
+			</route>
+		</scatter-gather>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]" doc:name="Set Variable" doc:id="e073de45-8816-42ba-9064-1e8f4b924627" variableName="variable"/>
+	</flow>
+</mule>
