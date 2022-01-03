@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1a811e6c-8950-46b5-8581-cea1b5a4fb1f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="queryparametersFlow" doc:id="3b883807-cbff-44b5-b5ba-436a92276092" >
+		<http:listener doc:name="multiplication" doc:id="5715d85a-9182-43cb-a68b-3adbbbe3760d" config-ref="HTTP_Listener_config" path="multiplication"/>
+		<ee:transform doc:name="Transform Message" doc:id="be56c6b4-01b7-4804-b3db-fa72bad67105" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"resultofmultiplication": (attributes.queryParams.a as Number)*(attributes.queryParams.b as Number),
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="queryparameter" doc:id="2f155d58-e280-4b0b-88e6-de9bc1763a48" message="endlogger"/>
+	</flow>
+	<flow name="queryparametersFlow1" doc:id="8db6bc89-8f5d-4f98-8794-2945b7f8a17b" >
+		<http:listener doc:name="Listener" doc:id="011c8c37-7946-42ad-89bc-58d3f06d024f" config-ref="HTTP_Listener_config" path="client_id"/>
+		<logger level="INFO" doc:name="Logger" doc:id="713668d2-3b76-4e62-84b2-d0160f664c89" message="client_id"/>
+		<ee:transform doc:name="Transform Message" doc:id="9bae982e-0fa7-4a0b-ba08-137804743f0a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"Client_id" : attributes.header.clientid,
+"clientsecret" : attributes.header.clientsecret,
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="04ab51b5-a1c5-4147-bc88-1dab91483a3b" message="endlogger"/>
+	</flow>
+</mule>

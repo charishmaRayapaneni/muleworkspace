@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2af51cde-c394-461e-9c4f-e14a096b8802" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="choicerouterFlow" doc:id="118d7b07-d0da-475b-a253-afd6a3a58f1f" >
+		<http:listener doc:name="Listener" doc:id="9989088e-749c-43cd-8a8d-17cb3c0b44a6" config-ref="HTTP_Listener_config" path="choicerouter"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5e909f01-bc5b-403b-921b-0ad126466710" message='#[payload."operation"]'/>
+		<choice doc:name="Choice" doc:id="a224bddf-6a42-48b4-b719-a7d648a15eb7" >
+			<when expression='#[payload."operation" == "addition"]'>
+				<logger level="INFO" doc:name="Addition operation" doc:id="89611779-55a7-4c3c-9a32-e05381a81e28" message="Addition operation is being executed"/>
+				<ee:transform doc:name="Transform Message" doc:id="a1ccfb6a-5fb5-472a-ab64-a088ca22786a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"result of addition" : payload.value1+payload.value2
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[payload."operation" == "subtraction"]'>
+				<logger level="INFO" doc:name="subtraction operation" doc:id="28adf3ac-0427-4fc3-ae55-2abc440d0d76" message="subtraction operation is being executed"/>
+				<ee:transform doc:name="Transform Message" doc:id="6cb99c29-f183-4af7-b8fc-f5f587a77692" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	"result of subtraction" : payload.value1-payload.value2
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[payload."operation" == "division"]'>
+				<logger level="INFO" doc:name="division operation" doc:id="8f65a34f-8297-4758-9cac-3b789f5d14f3" message="division operation is being executed"/>
+				<ee:transform doc:name="Transform Message" doc:id="22270462-4ba0-44d0-a6e2-e4e7cbb80f26" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	"result of division" : payload.value1/payload.value2
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[payload."operation" == "multiplication"]'>
+				<logger level="INFO" doc:name="multiplication operation" doc:id="697ab7f9-a412-4b50-8cb6-e76a80f29c5c" message="multiplication operation  is being executed"/>
+				<ee:transform doc:name="Transform Message" doc:id="ba1d7568-7f3f-4538-b7e8-bc3b98b794af" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	"result of multiplication" : payload.value1*payload.value2
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="109e7790-7773-4af8-8e6e-0425f251f562" message='operation is not valid'/>
+				<ee:transform doc:name="Transform Message" doc:id="8b41d004-8e79-4ba1-ac19-a5eec8a23dc9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Result" : payload."operation"++" is not valid operation"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

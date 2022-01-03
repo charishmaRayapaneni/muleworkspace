@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="42aa0f3e-431f-4c3b-a575-570979424e73" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="javamoduleFlow" doc:id="5f092203-65be-49eb-b140-47083296569c" >
+		<http:listener doc:name="Listener" doc:id="312b61b5-522f-4c55-bf39-96477d218974" config-ref="HTTP_Listener_config" path="/javamodule"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="970cc12e-b543-4e2d-a405-b2f9bb309a34" class="javamodule.democlass" method="getmessage()"/>
+		<logger level="INFO" doc:name="Logger" doc:id="899f08ff-3c30-4f97-9e3a-2b57ed5af9b0" />
+	</flow>
+</mule>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2796139a-cbc4-4488-abe1-197752c41659" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="2e55e13c-6e39-4162-80aa-b791ea17deed" >
+		<db:mssql-connection host="muletraining.database.windows.net" port="1433" user="user" password="muletraining@123" databaseName="BikeStores" />
+	</db:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="b508653f-a8ee-48cd-9c37-1a97e2948597" >
+		<db:mssql-connection host="muletraining.database.windows.net" port="1433" user="user" password="muletraining@123" databaseName="BikeStores" />
+	</db:config>
+	<flow name="databaseFlow" doc:id="d8ea569c-9827-417b-b4e5-1e64aeab4545" >
+		<http:listener doc:name="Listener" doc:id="41f02d9d-97eb-43ad-b04b-7cb286f31ee3" config-ref="HTTP_Listener_config" path="database"/>
+		<db:select doc:name="Select" doc:id="d7563a76-25ff-4f0c-9114-165bea314221" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from SalesLT.Customer Where FirstName = 'Bob']]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="f83f7e49-4859-4994-9a38-3fd1ef5b6aa4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="databaseFlow1" doc:id="42a51cfd-3d66-4092-9f38-2fa17cabb1c5" >
+		<db:listener table="production.categories" doc:name="On Table Row" doc:id="217e4a47-a7ad-4b58-be3c-a0181a9a1084" config-ref="Database_Config1" watermarkColumn="category_id">
+			<scheduling-strategy >
+				<fixed-frequency frequency="10" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</db:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="c8390f6b-9901-4a28-8c9c-4b42018664cb" message="#[payload]"/>
+	</flow>
+</mule>
