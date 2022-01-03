@@ -1,0 +1,27 @@
+INDEX VERSION 1.131+C:\Users\Lenovo\AnypointStudio\studio-workspace\.metadata\.plugins\org.eclipse.jdt.core
+1671771997.index
+1674729317.index
+1046280887.index
+2767840409.index
+4284773347.index
+2478604995.index
+2997362082.index
+1279980730.index
+141927510.index
+1550759394.index
+4205602535.index
+3512779918.index
+332383186.index
+3159433366.index
+3193591339.index
+2376816241.index
+1570233996.index
+1690891076.index
+2328269416.index
+3315470915.index
+346163147.index
+4078578380.index
+3002940363.index
+549489353.index
+3717001281.index
+2216499802.index

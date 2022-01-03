@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="651f9dec-570d-4005-8315-4bcc84da1e23" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="helloworldcharishmaFlow" doc:id="0021bf25-a149-48a9-ba7d-b9ce91b8fea2" >
+		<http:listener doc:name="/helloworld" doc:id="d1e4f77b-09f8-4ab8-adfb-c15f9e74660a" config-ref="HTTP_Listener_config" path="/helloworld"/>
+		<set-variable value="#[uuid()]" doc:name="Correlationid" doc:id="80156812-70d7-4495-aa6c-9dd1c66a666a" variableName="Correlationid"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0bac7e19-f0b9-45c7-ace8-37f8e64d5dcf" message="Correlationid-#[vars.Correlationid]"/>
+		<set-payload value="Hello" doc:name="Helloworld" doc:id="70b5acf3-606a-46c5-a076-d6e41920179d" />
+		<flow-ref doc:name="helloworldcharishmaSub_Flow" doc:id="60138dd7-e3c8-43cf-8027-8f80fdf1e90a" name="helloworldcharishmaSub_Flow"/>
+		<flow-ref doc:name="helloworldcharishma-privateflow" doc:id="a05fa1c3-9157-47cf-90b2-457f594cd78f" name="helloworldcharishma-privateflow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4d665b88-a4a3-4e63-abb1-e62b5acb933d" message="Correlationid-#[vars.Correlationid]-#[payload]"/>
+	</flow>
+	<sub-flow name="helloworldcharishmaSub_Flow" doc:id="d32759ea-7fd7-4720-ba7d-fca4d5cf3c2a" />
+	<flow name="helloworldcharishma-privateflow" doc:id="f564b701-3dfa-4c52-a298-c8d1b2338689" >
+		<logger level="INFO" doc:name="Privateflow logger" doc:id="e59faffb-9642-4914-beb3-925b58feb21b" message="Privateflow logger"/>
+	</flow>
+	<flow name="helloworldcharishmaFlow3" doc:id="ed119024-4aaa-4b9e-a062-29bebca01278" >
+		<flow-ref doc:name="helloworldcharishma-privateflow" doc:id="71b8f54a-e88b-4e52-84c4-271e8dc4a853" name="helloworldcharishma-privateflow"/>
+	</flow>
+	<flow name="helloworldcharishmaFlow1" doc:id="3c89d5e4-cab4-4ae9-8d52-64a18e3100be" >
+		<logger level="INFO" doc:name="Subflowlogger" doc:id="5b935156-ba8a-4900-a15f-6c0db5352624" message="Subflowlogger"/>
+	</flow>
+</mule>
